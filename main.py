@@ -5,17 +5,21 @@ class Taquin:
   def __init__(self):
     pygame.init()
     pygame.font.init()
-    self.width = 800
-    self.height = 800
+    self.width = 600
+    self.height = 600
     self.size = 4
     self.win = pygame.display.set_mode((self.width, self.height))
     pygame.display.set_caption("Taquin")
     self.clock = pygame.time.Clock()
-    self.board = [[i + j * self.size for i in range(self.size)] for j in range(self.size)]
-    self.empty = self.find_empty()
     self.tile_width = self.width // self.size
     self.tile_height = self.height // self.size
     self.running = True
+    self.moving = False
+
+    numbers = [i for i in range(1, self.size ** 2)]
+    numbers.append(0)
+    self.board = [[numbers.pop(0) for _ in range(self.size)] for _ in range(self.size)]
+    self.empty = self.find_empty()
 
     while self.running:
       for event in pygame.event.get():
@@ -25,8 +29,8 @@ class Taquin:
       self.update()
       self.draw()
 
-      self.clock.tick(5)
-  
+      self.clock.tick(60)
+
   def find_empty(self):
     for i in range(self.size):
       for j in range(self.size):
@@ -46,14 +50,19 @@ class Taquin:
 
   def update(self):
     keys = pygame.key.get_pressed()
-    if keys[pygame.K_UP]:
-      self.move("UP")
-    if keys[pygame.K_DOWN]:
-      self.move("DOWN", -1)
-    if keys[pygame.K_LEFT]:
-      self.move("LEFT")
-    if keys[pygame.K_RIGHT]:
-      self.move("RIGHT", -1)
+    if not self.moving:
+      if keys[pygame.K_UP]:
+        self.move("UP")
+      if keys[pygame.K_DOWN]:
+        self.move("DOWN", -1)
+      if keys[pygame.K_LEFT]:
+        self.move("LEFT")
+        self.moving = True
+      if keys[pygame.K_RIGHT]:
+        self.move("RIGHT", -1)
+
+    if not keys[pygame.K_UP] and not keys[pygame.K_DOWN] and not keys[pygame.K_LEFT] and not keys[pygame.K_RIGHT]:
+      self.moving = False
 
   def move(self, direction, orientation=1):
     if direction in ["UP", "DOWN"]:
@@ -68,6 +77,7 @@ class Taquin:
         self.board[self.empty[0]][self.empty[1]] = self.board[self.empty[0]][self.empty[1] + orientation]
         self.board[self.empty[0]][self.empty[1] + orientation] = 0
         self.empty = (self.empty[0], self.empty[1] + orientation)
+    self.moving = True
 
 
 if __name__ == "__main__":
