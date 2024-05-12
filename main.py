@@ -7,12 +7,12 @@ class Taquin:
     pygame.font.init()
     self.width = 600
     self.height = 600
+    self.board_size = 400
     self.size = 4
     self.win = pygame.display.set_mode((self.width, self.height))
     pygame.display.set_caption("Taquin")
     self.clock = pygame.time.Clock()
-    self.tile_width = self.width // self.size
-    self.tile_height = self.height // self.size
+    self.tile_size = self.board_size // self.size
     self.running = True
     self.moving = False
 
@@ -42,10 +42,10 @@ class Taquin:
     for i in range(self.size):
       for j in range(self.size):
         if self.board[i][j] != 0:
-          pygame.draw.rect(self.win, (255, 255, 255), (j * self.tile_width, i * self.tile_height, self.tile_width, self.tile_height))
+          pygame.draw.rect(self.win, (255, 255, 255), (j * self.tile_size, i * self.tile_size, self.tile_size, self.tile_size))
           font = pygame.font.SysFont("monospace", 50)
           text = font.render(str(self.board[i][j]), True, (0, 0, 0))
-          self.win.blit(text, (j * self.tile_width + self.tile_width // 2 - text.get_width() // 2, i * self.tile_height + self.tile_height // 2 - text.get_height() // 2))
+          self.win.blit(text, (j * self.tile_size + self.tile_size // 2 - text.get_width() // 2, i * self.tile_size + self.tile_size // 2 - text.get_height() // 2))
     pygame.display.flip()
 
   def update(self):
