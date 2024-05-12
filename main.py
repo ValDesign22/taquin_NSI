@@ -1,9 +1,29 @@
 import pygame
 from random import choice
 
+class Solver:
+  def __init__(self):
+    self.size = 4
+    self.board = None
+    self.empty = None
+
+  def init(self, taquin):
+    self.size = taquin.size
+    self.board = taquin.board
+    self.empty = taquin.empty
+  
+  def solve(self):
+    print("Solving...")
+    pass
+
+  def is_solved(self):
+    numbers = [i for i in range(1, self.size ** 2)]
+    numbers.append(0)
+    final_state = [[numbers.pop(0) for _ in range(self.size)] for _ in range(self.size)]
+    return self.board == final_state
 
 class Taquin:
-  def __init__(self):
+  def __init__(self, solver):
     pygame.init()
     pygame.font.init()
     self.width = 600
@@ -26,6 +46,9 @@ class Taquin:
     numbers.append(0)
     self.board = [[numbers.pop(0) for _ in range(self.size)] for _ in range(self.size)]
     self.empty = self.find_empty()
+
+    self.solver = solver
+    self.solver.init(self)
 
     while self.running:
       for event in pygame.event.get():
@@ -99,6 +122,8 @@ class Taquin:
       if btn["clicked"]:
         if btn["text"] == "Mélanger":
           self.shuffle()
+        elif btn["text"] == "Résoudre":
+          self.solver.solve()
         btn["clicked"] = False
 
   def move(self, direction, orientation=1):
@@ -118,4 +143,5 @@ class Taquin:
 
 
 if __name__ == "__main__":
-  game = Taquin()
+  solver = Solver()
+  game = Taquin(solver)
