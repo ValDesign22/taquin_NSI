@@ -16,11 +16,11 @@ class Solver:
     print("Solving...")
     pass
 
-  def is_solved(self):
+  def is_solved(self, board):
     numbers = [i for i in range(1, self.size ** 2)]
     numbers.append(0)
     final_state = [[numbers.pop(0) for _ in range(self.size)] for _ in range(self.size)]
-    return self.board == final_state
+    return board == final_state
 
 class Taquin:
   def __init__(self, solver):
