@@ -17,8 +17,7 @@ class Taquin:
     self.moving = False
 
     self.buttons = [
-      {"text": "Mélanger", "x": 100, "y": 450, "width": 100, "height": 50, "color": (255, 255, 255), "hover_color": (200, 200, 200), "clicked": False},
-      {"text": "Résoudre", "x": 400, "y": 450, "width": 100, "height": 50, "color": (255, 255, 255), "hover_color": (200, 200, 200), "clicked": False}
+      {"text": "Mélanger", "x": 100, "y": 450, "width": 100, "height": 50, "color": (255, 255, 255), "hover_color": (200, 200, 200), "clicked": False}
     ]
 
     numbers = [i for i in range(1, self.size ** 2)]
