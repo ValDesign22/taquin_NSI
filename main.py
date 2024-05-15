@@ -55,9 +55,7 @@ class Taquin:
         if event.type == pygame.QUIT:
           self.running = False
         if event.type == pygame.MOUSEBUTTONDOWN:
-          for btn in self.buttons:
-            if btn["x"] <= event.pos[0] <= btn["x"] + btn["width"] and btn["y"] <= event.pos[1] <= btn["y"] + btn["height"]:
-              btn["clicked"] = True
+          self.on_click(event)
       
       self.update()
       self.win.fill((0, 0, 0))
@@ -66,6 +64,29 @@ class Taquin:
       pygame.display.flip()
 
       self.clock.tick(60)
+
+  def on_click(self, event):
+    x, y = event.pos
+
+    # Boutons
+    for btn in self.buttons:
+      if x > btn["x"] and x < btn["x"] + btn["width"] and y > btn["y"] and y < btn["y"] + btn["height"]:
+        btn["clicked"] = True
+    
+    # Cases
+    if x > 100 and x < 100 + self.board_size and y > 0 and y < self.board_size:
+      j = (x - 100) // self.tile_size
+      i = y // self.tile_size
+      if self.board[i][j] == 0:
+        return
+      if i == self.empty[0] and j == self.empty[1] - 1:
+        self.move("RIGHT", -1)
+      elif i == self.empty[0] and j == self.empty[1] + 1:
+        self.move("LEFT")
+      elif i == self.empty[0] - 1 and j == self.empty[1]:
+        self.move("DOWN", -1)
+      elif i == self.empty[0] + 1 and j == self.empty[1]:
+        self.move("UP")
 
   def shuffle(self, moves=1000):
     for _ in range(moves):
