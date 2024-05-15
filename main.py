@@ -15,9 +15,10 @@ class Taquin:
     self.tile_size = self.board_size // self.size
     self.running = True
     self.moving = False
+    self.move_count = 0
 
     self.buttons = [
-      {"text": "Mélanger", "x": 100, "y": 450, "width": 100, "height": 50, "color": (255, 255, 255), "hover_color": (200, 200, 200), "clicked": False}
+      {"text": "Mélanger", "x": 100, "y": 450, "width": 100, "height": 50, "color": (255, 255, 255), "hover_color": (200, 200, 200), "clicked": False, "show": True},
     ]
 
     numbers = [i for i in range(1, self.size ** 2)]
@@ -36,14 +37,23 @@ class Taquin:
       self.win.fill((0, 0, 0))
       self.draw()
       self.draw_buttons()
+      if self.is_solved() and self.move_count > 0:
+        font = pygame.font.SysFont("monospace", 25)
+        text = font.render("Gagné !", True, (255, 255, 255))
+        self.win.blit(text, (100 + 100 + 10, 450 + 25 - text.get_height() // 2))
+        move_text = font.render(f"Nombre de mouvements: {self.move_count}", True, (255, 255, 255))
+        self.win.blit(move_text, (100 + 100 + 10, 450 + 25 + 10))
       pygame.display.flip()
 
       self.clock.tick(60)
 
   def is_solved(self):
+    if self.move_count == 0:
+      return False
     numbers = [i for i in range(1, self.size ** 2)]
     numbers.append(0)
     final_state = [[numbers.pop(0) for _ in range(self.size)] for _ in range(self.size)]
+    self.buttons[0]["show"] = True
     return self.board == final_state
 
   def on_click(self, event):
@@ -81,6 +91,7 @@ class Taquin:
           self.move("LEFT")
         case "RIGHT":
           self.move("RIGHT", -1)
+    self.move_count = 0
 
   def find_empty(self):
     for i in range(self.size):
@@ -98,34 +109,35 @@ class Taquin:
           self.win.blit(text, (100 + j * self.tile_size + self.tile_size // 2 - text.get_width() // 2, i * self.tile_size + self.tile_size // 2 - text.get_height() // 2))
 
   def draw_buttons(self):
-    for btn in self.buttons:
-      pygame.draw.rect(self.win, btn["color"], (btn["x"], btn["y"], btn["width"], btn["height"]))
-      font = pygame.font.SysFont("monospace", 20)
-      text = font.render(btn["text"], True, (0, 0, 0))
-      self.win.blit(text, (btn["x"] + btn["width"] // 2 - text.get_width() // 2, btn["y"] + btn["height"] // 2 - text.get_height() // 2))
+      for btn in self.buttons:
+        if btn["show"]:
+          pygame.draw.rect(self.win, btn["color"], (btn["x"], btn["y"], btn["width"], btn["height"]))
+          font = pygame.font.SysFont("monospace", 20)
+          text = font.render(btn["text"], True, (0, 0, 0))
+          self.win.blit(text, (btn["x"] + btn["width"] // 2 - text.get_width() // 2, btn["y"] + btn["height"] // 2 - text.get_height() // 2))
 
   def update(self):
-    keys = pygame.key.get_pressed()
-    if not self.moving:
-      if keys[pygame.K_UP]:
-        self.move("UP")
-      if keys[pygame.K_DOWN]:
-        self.move("DOWN", -1)
-      if keys[pygame.K_LEFT]:
-        self.move("LEFT")
-        self.moving = True
-      if keys[pygame.K_RIGHT]:
-        self.move("RIGHT", -1)
+    if not self.is_solved():
+      keys = pygame.key.get_pressed()
+      if not self.moving:
+        if keys[pygame.K_UP]:
+          self.move("UP")
+        if keys[pygame.K_DOWN]:
+          self.move("DOWN", -1)
+        if keys[pygame.K_LEFT]:
+          self.move("LEFT")
+          self.moving = True
+        if keys[pygame.K_RIGHT]:
+          self.move("RIGHT", -1)
 
-    if not keys[pygame.K_UP] and not keys[pygame.K_DOWN] and not keys[pygame.K_LEFT] and not keys[pygame.K_RIGHT]:
-      self.moving = False
+      if not keys[pygame.K_UP] and not keys[pygame.K_DOWN] and not keys[pygame.K_LEFT] and not keys[pygame.K_RIGHT]:
+        self.moving = False
 
     for btn in self.buttons:
       if btn["clicked"]:
         if btn["text"] == "Mélanger":
           self.shuffle()
-        elif btn["text"] == "Résoudre":
-          self.solver.solve()
+          btn["show"] = False
         btn["clicked"] = False
 
   def move(self, direction, orientation=1):
@@ -142,6 +154,7 @@ class Taquin:
         self.board[self.empty[0]][self.empty[1] + orientation] = 0
         self.empty = (self.empty[0], self.empty[1] + orientation)
     self.moving = True
+    self.move_count += 1
 
 
 if __name__ == "__main__":
